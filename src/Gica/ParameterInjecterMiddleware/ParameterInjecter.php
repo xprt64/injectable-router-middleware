@@ -34,6 +34,10 @@ class ParameterInjecter
     {
         $matchedRoute = $request->getAttribute('Zend\Expressive\Router\RouteResult');
 
+        if (!$matchedRoute) {
+            return $next($request, $request);
+        }
+
         $className = $matchedRoute->getMatchedMiddleware();
 
         if (!$className) {
