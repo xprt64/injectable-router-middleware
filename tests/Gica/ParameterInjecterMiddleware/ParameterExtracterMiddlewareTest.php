@@ -9,7 +9,6 @@ use Gica\ParameterInjecterMiddleware\ParameterInjecter;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Router\RouteResult;
 
 class ParameterExtracterMiddlewareTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +19,7 @@ class ParameterExtracterMiddlewareTest extends \PHPUnit_Framework_TestCase
             //   ->setMethods(['getAttribute', 'getQueryParams'])
             ->getMock();
 
-        $matchedRoute = $this->getMockBuilder(RouteResult::class)
+        $matchedRoute = $this->getMockBuilder('Zend\Expressive\Router\RouteResult')
             ->disableOriginalConstructor()
             ->setMethods(['getMatchedMiddleware'])
             ->getMock();
@@ -29,7 +28,7 @@ class ParameterExtracterMiddlewareTest extends \PHPUnit_Framework_TestCase
             ->willReturn(WebPage::class);
 
         $map = [
-            RouteResult::class => $matchedRoute,
+            'Zend\Expressive\Router\RouteResult' => $matchedRoute,
             'integerAttribute' => 123,
             'floatAttribute'   => 123.456,
             'stringAttribute'  => 'abc',
