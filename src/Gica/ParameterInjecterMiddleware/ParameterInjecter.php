@@ -48,16 +48,18 @@ class ParameterInjecter
 
         $invoke = $this->middlewareClass->getMethod('__invoke');
 
+        $get = $request->getQueryParams();
+        $body = $request->getParsedBody();
+
         $this->variables = [
             'request'  => $request,
             'isPost'   => 'POST' == $request->getMethod(),
             'isGet'    => 'GET' == $request->getMethod(),
             'response' => $response,
             'next'     => $next,
+            'get'      => $get,
+            'body'     => $body,
         ];
-
-        $get = $request->getQueryParams();
-        $body = $request->getParsedBody();
 
         $callArguments = [];
 
