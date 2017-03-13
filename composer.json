@@ -1,0 +1,27 @@
+{
+  "name": "xprt64/injectable-router-middleware",
+  "description": "Zend Framework middle-ware that, using reflection, detects and injects the parameters in the invoke method",
+  "type": "library",
+   "license": "MIT",
+  "authors": [
+    {
+      "name": "Constantin GALBENU",
+      "email": "gica.galbenu@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "psr/container": "^1.0",
+    "psr/http-message": "^1.0",
+    "zendframework/zend-expressive-router": "^2.1",
+    "xprt64/code-analysis": "^1.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Gica\\ParameterInjecterMiddleware\\": "src/Gica/ParameterInjecterMiddleware/"
+    }
+  }
+}
