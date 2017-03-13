@@ -241,7 +241,7 @@ class ParameterInjecter
 
     private function getValue(ServerRequestInterface $request, \ReflectionParameter $parameter, $get, $body)
     {
-        if (preg_match('#(.+)Body$#ims', $parameter->getName(), $m)) {
+        if (preg_match('#^(.+)Body$#ims', $parameter->getName(), $m) || preg_match('#^(.+)Post#ims', $parameter->getName(), $m)) {
             return isset($body[$m[1]]) ? $body[$m[1]] : null;
         }
 
