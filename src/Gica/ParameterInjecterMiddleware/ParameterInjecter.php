@@ -57,11 +57,12 @@ class ParameterInjecter
         ];
 
         $get = $request->getQueryParams();
+        $body = $request->getParsedBody();
 
         $callArguments = [];
 
         foreach ($invoke->getParameters() as $parameter) {
-            $rawValue = $this->getValue($request, $parameter, $get);
+            $rawValue = $this->getValue($request, $parameter, $get, $body);
 
             //echo $parameter->getName() . ' ' . (string)$parameter->getType() . ' ' . print_r($rawValue, true) . (is_null($rawValue) ? ' (NULL)' : '') . "\n\n";
 
@@ -236,8 +237,12 @@ class ParameterInjecter
 
     }
 
-    private function getValue(ServerRequestInterface $request, \ReflectionParameter $parameter, $get)
+    private function getValue(ServerRequestInterface $request, \ReflectionParameter $parameter, $get, $body)
     {
+        if (preg_match('#(.+)Body$#ims', $parameter->getName(), $m)) {
+            return isset($body[$m[1]]) ? $body[$m[1]] : null;
+        }
+
         return (null !== $request->getAttribute($parameter->name)) ? $request->getAttribute($parameter->name) : @$get[$parameter->name];
     }
 }
