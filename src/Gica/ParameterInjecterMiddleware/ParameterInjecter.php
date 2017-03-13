@@ -9,7 +9,6 @@ use Gica\CodeAnalysis\Shared\FqnResolver;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Router\RouteResult;
 
 class ParameterInjecter
 {
@@ -33,8 +32,7 @@ class ParameterInjecter
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
     {
-        /** @var RouteResult $matchedRoute */
-        $matchedRoute = $request->getAttribute(RouteResult::class);
+        $matchedRoute = $request->getAttribute('Zend\Expressive\Router\RouteResult');
 
         $className = $matchedRoute->getMatchedMiddleware();
 
@@ -52,6 +50,8 @@ class ParameterInjecter
 
         $this->variables = [
             'request'  => $request,
+            'isPost'   => 'POST' == $request->getMethod(),
+            'isGet'    => 'GET' == $request->getMethod(),
             'response' => $response,
             'next'     => $next,
         ];
