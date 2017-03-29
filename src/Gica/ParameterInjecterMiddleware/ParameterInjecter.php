@@ -70,6 +70,10 @@ class ParameterInjecter
         foreach ($invoke->getParameters() as $parameter) {
             $rawValue = $this->getValue($request, $parameter, $get, $body);
 
+            if ($rawValue === '') {
+                $rawValue = null;
+            }
+
             //echo $parameter->getName() . ' ' . (string)$parameter->getType() . ' ' . print_r($rawValue, true) . (is_null($rawValue) ? ' (NULL)' : '') . "\n\n";
 
             $callArguments[] = $this->parseParameter($rawValue, $parameter, $invoke);
@@ -184,10 +188,15 @@ class ParameterInjecter
 
     private function tryFromPrimitive(\ReflectionClass $reflectionClass, $document)
     {
-        if (is_scalar($document) || is_array($document)) {
-            if (is_callable([$reflectionClass->getName(), 'fromPrimitive'])) {
-                return call_user_func([$reflectionClass->getName(), 'fromPrimitive'], $document);
+        try {
+            if (is_scalar($document) || is_array($document)) {
+                if (is_callable([$reflectionClass->getName(), 'fromPrimitive'])) {
+                    return call_user_func([$reflectionClass->getName(), 'fromPrimitive'], $document);
+                }
             }
+
+        } catch (\Throwable $exception) {
+
         }
 
         return null;
