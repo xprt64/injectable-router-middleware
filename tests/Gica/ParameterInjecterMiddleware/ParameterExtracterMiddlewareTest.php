@@ -5,6 +5,9 @@
 
 namespace tests\Gica\ParameterInjecterMiddleware;
 
+use Gica\ParameterInjecterMiddleware\CustomHydrator\CompositeHydrator;
+use Gica\ParameterInjecterMiddleware\CustomHydrator\StaticMethodFromPrimitive;
+use Gica\ParameterInjecterMiddleware\CustomHydrator\StaticMethodFromString;
 use Gica\ParameterInjecterMiddleware\ParameterInjecter;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -29,10 +32,10 @@ class ParameterExtracterMiddlewareTest extends \PHPUnit_Framework_TestCase
 
         $map = [
             'Zend\Expressive\Router\RouteResult' => $matchedRoute,
-            'integerAttribute' => 123,
-            'floatAttribute'   => 123.456,
-            'stringAttribute'  => 'abc',
-            'integers'         => '1|2|3',
+            'integerAttribute'                   => 123,
+            'floatAttribute'                     => 123.456,
+            'stringAttribute'                    => 'abc',
+            'integers'                           => '1|2|3',
         ];
 
         $request->method('getAttribute')
@@ -76,7 +79,10 @@ class ParameterExtracterMiddlewareTest extends \PHPUnit_Framework_TestCase
             ->willReturn($called);
 
         /** @var ContainerInterface $container */
-        $sut = new ParameterInjecter($container);
+        $sut = new ParameterInjecter($container, new CompositeHydrator([
+            new StaticMethodFromPrimitive(),
+            new StaticMethodFromString()
+        ]));
 
         /** @var ServerRequestInterface $request */
         /** @var ResponseInterface $response */

@@ -22,12 +22,18 @@ class ParameterInjecter
 
     /** @var \ReflectionClass */
     private $middlewareClass;
+    /**
+     * @var CustomHydrator
+     */
+    private $customHydrator;
 
     public function __construct(
-        ContainerInterface $container
+        ContainerInterface $container,
+        CustomHydrator $customHydrator
     )
     {
         $this->container = $container;
+        $this->customHydrator = $customHydrator;
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
@@ -154,52 +160,11 @@ class ParameterInjecter
 
     private function hydrateCustomValue($rawValue, \ReflectionClass $reflectionClass, string $parameterName)
     {
-        $object = $this->tryFromString($reflectionClass, $rawValue);
-
-        if (null !== $object) {
-            return $object;
-        }
-
-        $object = $this->tryFromPrimitive($reflectionClass, $rawValue);
-
-        if (null !== $object) {
-            return $object;
-        }
-
-
-        throw new \Exception("unkown custom value for {$parameterName}@{$reflectionClass->name}");
-    }
-
-
-    private function tryFromString(\ReflectionClass $reflectionClass, $document)
-    {
-        if ((is_string($document) || is_callable([$document, '__toString']))) {
-            if ($reflectionClass->hasMethod('fromString')) {
-                $method = $reflectionClass->getMethod('fromString');
-
-                if ($method->isStatic()) {
-                    return $method->invoke(null, (string)$document);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private function tryFromPrimitive(\ReflectionClass $reflectionClass, $document)
-    {
         try {
-            if (is_scalar($document) || is_array($document)) {
-                if (is_callable([$reflectionClass->getName(), 'fromPrimitive'])) {
-                    return call_user_func([$reflectionClass->getName(), 'fromPrimitive'], $document);
-                }
-            }
-
-        } catch (\Throwable $exception) {
-
+            return $this->customHydrator->tryToHydrateFromValue($reflectionClass, $rawValue);
+        } catch (\Exception $exception) {
+            throw new \Exception("unkown custom value for {$parameterName}@{$reflectionClass->name}: {$exception->getMessage()}");
         }
-
-        return null;
     }
 
     private function hydrateArrayValue($rawValue, \ReflectionParameter $parameter, \ReflectionMethod $method)
