@@ -76,7 +76,7 @@ class ParameterInjecter
         foreach ($invoke->getParameters() as $parameter) {
             $rawValue = $this->getValue($request, $parameter, $get, $body);
 
-            if ($rawValue === '' || $rawValue === '__null__') {
+            if ($rawValue === '') {
                 $rawValue = null;
             }
 
